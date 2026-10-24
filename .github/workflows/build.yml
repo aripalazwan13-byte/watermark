@@ -1,0 +1,41 @@
+
+name: Build Watermark EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Ambil kode
+        uses: actions/checkout@v4
+
+      - name: Siapkan Python di cloud
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pasang kebutuhan aplikasi
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Buat EXE
+        run: |
+          pyinstaller --noconfirm --clean --onefile --console --name Watermark_HUMASSKANSA watermark.py
+
+      - name: Simpan hasil EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Watermark-HUMASSKANSA-Windows
+          path: dist/Watermark_HUMASSKANSA.exe
+          if-no-files-found: error
+          retention-days: 7
